@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
-<body>
+{% block scripts %}<script src={% static 'js/app.js' %}></script>{% endblock %}
+
 {% block content %}
     <header class="header--main-page">
         <nav class="container container--70">
@@ -32,14 +33,14 @@
     <section id="stats" class="stats">
         <div class="container container--85">
             <div class="stats--item">
-                <em>10</em>
+                <em>{{ total_bags }}</em>
                 <h3>Oddanych worków</h3>
                 <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius est beatae, quod accusamus illum
                     tempora!</p>
             </div>
 
             <div class="stats--item">
-                <em>5</em>
+                <em>{{ institutions }}</em>
                 <h3>Wspartych organizacji</h3>
                 <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Laboriosam magnam, sint nihil cupiditate
                     quas quam.</p>
@@ -247,30 +248,3 @@
         </div>
     </section>
 {% endblock %}
-{% block footer %}
-    <footer>
-        <div id="contact" class="contact">
-            <h2>Skontaktuj się z nami</h2>
-            <h3>Formularz kontaktowy</h3>
-            <form class="form--contact">
-                <div class="form-group form-group--50"><input type="text" name="name" placeholder="Imię"/></div>
-                <div class="form-group form-group--50"><input type="text" name="surname" placeholder="Nazwisko"/></div>
-
-                <div class="form-group"><textarea name="message" placeholder="Wiadomość" rows="1"></textarea></div>
-
-                <button class="btn" type="submit">Wyślij</button>
-            </form>
-        </div>
-        <div class="bottom-line">
-            <span class="bottom-line--copy">Copyright &copy; 2019</span>
-            <div class="bottom-line--icons">
-                <a href="#" class="btn btn--small"><img src="images/icon-facebook.svg"/></a>
-                <a href="#" class="btn btn--small"><img src="images/icon-instagram.svg"/></a>
-            </div>
-        </div>
-    </footer>
-
-    <script src="js/app.js"></script>
-{% endblock %}
-
-</body>
