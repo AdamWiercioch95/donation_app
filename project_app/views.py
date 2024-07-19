@@ -1,7 +1,7 @@
 from django.db.models import Sum
 from django.views.generic import TemplateView
 
-from project_app.models import Donation, Institution
+from project_app.models import Donation, Institution, TYPES
 
 
 class LandingPageView(TemplateView):
@@ -10,7 +10,14 @@ class LandingPageView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['total_bags'] = Donation.objects.all().aggregate(Sum('quantity'))['quantity__sum'] or 0
-        context['institutions'] = Institution.objects.count()
+        context['institutions'] = Institution.objects.all()
+        context['institution_types'] = TYPES
+
+        context['institution_descriptions'] = {
+            1: "W naszej bazie znajdziesz listę zweryfikowanych Fundacji, z którymi współpracujemy. Możesz sprawdzić czym się zajmują, komu pomagają i czego potrzebują.",
+            2: "W naszej bazie znajdziesz listę zweryfikowanych Organizacji Pozarządowych, z którymi współpracujemy. Możesz sprawdzić czym się zajmują, komu pomagają i czego potrzebują.",
+            3: "W naszej bazie znajdziesz listę zweryfikowanych Lokalnych Zbiórek, z którymi współpracujemy. Możesz sprawdzić czym się zajmują, komu pomagają i czego potrzebują.",
+        }
         return context
 
 
