@@ -1,8 +1,9 @@
 from django.contrib import messages
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.db.models import Sum
 from django.shortcuts import redirect
+from django.views import View
 from django.views.generic import TemplateView
 
 from project_app.models import Donation, Institution, TYPES
@@ -71,3 +72,9 @@ class RegisterView(TemplateView):
         User.objects.create_user(first_name=name, last_name=surname, email=email, password=password, username=email)
 
         return redirect('login')
+
+
+class LogoutView(View):
+    def get(self, request):
+        logout(request)
+        return redirect('landing_page')
