@@ -1,5 +1,7 @@
-from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from django.contrib import messages
+from django.contrib.auth.models import User
 from django.db.models import Sum
+from django.shortcuts import redirect
 from django.views.generic import TemplateView
 
 from project_app.models import Donation, Institution, TYPES
@@ -31,3 +33,22 @@ class LoginView(TemplateView):
 
 class RegisterView(TemplateView):
     template_name = 'register.html'
+
+    def post(self, request):
+        name = request.POST.get('name')
+        surname = request.POST.get('surname')
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+        password2 = request.POST.get('password2')
+
+        if password != password2:
+            messages.error(request, 'Podane hasła nie są takie same.')
+            return self.render_to_response(self.get_context_data())
+
+        if User.objects.filter(email=email).exists():
+            messages.error(request, 'Użytkownik o podanym adresie email już istnieje.')
+            return self.render_to_response(self.get_context_data())
+
+        User.objects.create_user(first_name=name, last_name=surname, email=email, password=password, username=email)
+
+        return redirect('login')
