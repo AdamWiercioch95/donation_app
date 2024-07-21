@@ -1,4 +1,5 @@
 from django.contrib import messages
+from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
 from django.db.models import Sum
 from django.shortcuts import redirect
@@ -29,6 +30,24 @@ class ConfirmDonationView(TemplateView):
 
 class LoginView(TemplateView):
     template_name = 'login.html'
+
+    def post(self, request):
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+
+        try:
+            user = User.objects.get(email=email)
+            username = user.username
+        except User.DoesNotExist:
+            return redirect('register')
+
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            return redirect('landing_page')
+        else:
+            messages.error(request, 'Nieprawidłowe hasło.')
+            return self.render_to_response(self.get_context_data())
 
 
 class RegisterView(TemplateView):
