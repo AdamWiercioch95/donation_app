@@ -1,3 +1,5 @@
+import json
+
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -28,7 +30,17 @@ class AddDonationView(LoginRequiredMixin, View):
 
     def get(self, request):
         categories = Category.objects.all()
-        return render(request, 'form.html', {'categories': categories})
+        organizations = Institution.objects.all()
+        for organization in organizations:
+            category_ids = list(organization.categories.values_list('id', flat=True))
+            organization.category_ids_json = json.dumps(category_ids)
+
+        context = {
+            'categories': categories,
+            'organizations': organizations,
+        }
+
+        return render(request, 'form.html', context)
 
 
 class ConfirmDonationView(TemplateView):

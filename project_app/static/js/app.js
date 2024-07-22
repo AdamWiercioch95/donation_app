@@ -212,6 +212,11 @@ document.addEventListener("DOMContentLoaded", function() {
 
       // Form submit
       this.$form.querySelector("form").addEventListener("submit", e => this.submit(e));
+
+      // Category change
+      document.querySelectorAll('input[name="categories"]').forEach(checkbox => {
+        checkbox.addEventListener('change', this.filterOrganizations.bind(this));
+      });
     }
 
     /**
@@ -234,7 +239,24 @@ document.addEventListener("DOMContentLoaded", function() {
       this.$stepInstructions[0].parentElement.parentElement.hidden = this.currentStep >= 6;
       this.$step.parentElement.hidden = this.currentStep >= 6;
 
+      if (this.currentStep == 3) {
+        this.filterOrganizations();
+      }
+
       // TODO: get data from inputs and show them in summary
+    }
+
+    /**
+     * Filter organizations based on selected categories
+     */
+    filterOrganizations() {
+      const selectedCategories = Array.from(document.querySelectorAll('input[name="categories"]:checked')).map(cb => parseInt(cb.value));
+      document.querySelectorAll('input[name="organization"]').forEach(input => {
+        const organizationCategories = JSON.parse(input.dataset.categories);
+        const organizationElement = input.closest('.form-group');
+        const isVisible = organizationCategories.some(catId => selectedCategories.includes(catId));
+        organizationElement.style.display = isVisible ? '' : 'none';
+      });
     }
 
     /**
