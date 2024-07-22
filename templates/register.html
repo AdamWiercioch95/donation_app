@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Rejestracja{% endblock %}
+
+{% block content %}
+    <section class="login-page">
+        <h2>Załóż konto</h2>
+        
+        {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+        
+        <form method="post" action="{% url 'register' %}">
+            {% csrf_token %}
+            <div class="form-group">
+                <input type="text" name="name" placeholder="Imię"/>
+            </div>
+            <div class="form-group">
+                <input type="text" name="surname" placeholder="Nazwisko"/>
+            </div>
+            <div class="form-group">
+                <input type="email" name="email" placeholder="Email"/>
+            </div>
+            <div class="form-group">
+                <input type="password" name="password" placeholder="Hasło"/>
+            </div>
+            <div class="form-group">
+                <input type="password" name="password2" placeholder="Powtórz hasło"/>
+            </div>
+
+            <div class="form-group form-group--buttons">
+                <a href="{% url 'login' %}" class="btn btn--without-border">Zaloguj się</a>
+                <button class="btn" type="submit">Załóż konto</button>
+            </div>
+        </form>
+    </section>
+{% endblock %}

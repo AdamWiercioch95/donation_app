@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block scripts %}
+    <script src={% static 'js/app.js' %}></script>{% endblock %}
+
+{% block header_class %}header--main-page{% endblock %}
+
+{% block header_content %}
+    <div class="slogan container container--90">
+        <div class="slogan--item">
+            <h1>
+                Zacznij pomagać!<br/>
+                Oddaj niechciane rzeczy w zaufane ręce
+            </h1>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+
+    <section id="stats" class="stats">
+        <div class="container container--85">
+            <div class="stats--item">
+                <em>{{ total_bags }}</em>
+                <h3>Oddanych worków</h3>
+                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius est beatae, quod accusamus illum
+                    tempora!</p>
+            </div>
+
+            <div class="stats--item">
+                <em>{{ institutions.count }}</em>
+                <h3>Wspartych organizacji</h3>
+                <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Laboriosam magnam, sint nihil cupiditate
+                    quas quam.</p>
+            </div>
+
+        </div>
+    </section>
+
+    <section id="steps" class="steps">
+        <h2>Wystarczą 4 proste kroki</h2>
+
+        <div class="steps--container">
+            <div class="steps--item">
+                <span class="icon icon--hands"></span>
+                <h3>Wybierz rzeczy</h3>
+                <p>ubrania, zabawki, sprzęt i inne</p>
+            </div>
+            <div class="steps--item">
+                <span class="icon icon--arrow"></span>
+                <h3>Spakuj je</h3>
+                <p>skorzystaj z worków na śmieci</p>
+            </div>
+            <div class="steps--item">
+                <span class="icon icon--glasses"></span>
+                <h3>Zdecyduj komu chcesz pomóc</h3>
+                <p>wybierz zaufane miejsce</p>
+            </div>
+            <div class="steps--item">
+                <span class="icon icon--courier"></span>
+                <h3>Zamów kuriera</h3>
+                <p>kurier przyjedzie w dogodnym terminie</p>
+            </div>
+        </div>
+
+        <a href="{% url 'register' %}" class="btn btn--large">Załóż konto</a>
+    </section>
+
+    <section id="about-us" class="about-us">
+        <div class="about-us--text">
+            <h2>O nas</h2>
+            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Voluptas vitae animi rem pariatur incidunt
+                libero optio esse quisquam illo omnis.</p>
+            <img src="images/signature.svg" class="about-us--text-signature" alt="Signature"/>
+        </div>
+        <div class="about-us--image"><img src="images/about-us.jpg" alt="People in circle"/></div>
+    </section>
+
+    <section id="help" class="help">
+        <h2>Komu pomagamy?</h2>
+
+        <ul class="help--buttons">
+            <li data-id="1"><a href="#" class="btn btn--without-border active">Fundacjom</a></li>
+            <li data-id="2"><a href="#" class="btn btn--without-border">Organizacjom pozarządowym</a></li>
+            <li data-id="3"><a href="#" class="btn btn--without-border">Lokalnym zbiórkom</a></li>
+        </ul>
+
+        {% for type, label in institution_types %}
+            <div class="help--slides {% if forloop.first %}active{% endif %}" data-id="{{ type }}">
+
+                {% if type == 1 %}
+                    <p>W naszej bazie znajdziesz listę zweryfikowanych Fundacji, z którymi współpracujemy. Możesz
+                        sprawdzić czym się zajmują, komu pomagają i czego potrzebują.</p>
+                {% elif type == 2 %}
+                    <p>W naszej bazie znajdziesz listę zweryfikowanych Organizacji pozarządowych, z którymi
+                        współpracujemy. Możesz sprawdzić czym się zajmują, komu pomagają i czego potrzebują.</p>
+                {% elif type == 3 %}
+                    <p>W naszej bazie znajdziesz listę zweryfikowanych Lokalnych zbiórek, z którymi
+                        współpracujemy. Możesz sprawdzić czym się zajmują, komu pomagają i czego potrzebują.</p>
+                {% endif %}
+
+                <ul class="help--slides-items">
+                    {% for institution in institutions %}
+                        {% if institution.type == type %}
+                            <li>
+                                <div class="col">
+                                    <div class="title">{{ institution.name }}</div>
+                                    <div class="subtitle">{{ institution.description }}</div>
+                                </div>
+                                <div class="col">
+                                    <div class="text">ubrania, jedzenie, sprzęt AGD, meble, zabawki</div>
+                                </div>
+                            </li>
+                            <!-- Pagination
+                            <ul class="help--slides-pagination">
+                              <li><a href="#" class="btn btn--small btn--without-border active" data-page="1">1</a></li>
+                              <li><a href="#" class="btn btn--small btn--without-border" data-page="2">2</a></li>
+                              <li><a href="#" class="btn btn--small btn--without-border" data-page="3">3</a></li>
+                            </ul>
+                            -->
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endfor %}
+    </section>
+
+{% endblock %}
