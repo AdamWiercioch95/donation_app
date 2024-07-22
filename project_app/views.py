@@ -1,12 +1,13 @@
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.db.models import Sum
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 from django.views import View
 from django.views.generic import TemplateView
 
-from project_app.models import Donation, Institution, TYPES
+from project_app.models import Donation, Institution, TYPES, Category
 
 
 class LandingPageView(TemplateView):
@@ -21,8 +22,13 @@ class LandingPageView(TemplateView):
         return context
 
 
-class AddDonationView(TemplateView):
-    template_name = 'form.html'
+class AddDonationView(LoginRequiredMixin, View):
+    login_url = 'login'
+    redirect_field_name = 'redirect_to'
+
+    def get(self, request):
+        categories = Category.objects.all()
+        return render(request, 'form.html', {'categories': categories})
 
 
 class ConfirmDonationView(TemplateView):
