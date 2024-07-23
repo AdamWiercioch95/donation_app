@@ -243,7 +243,9 @@ document.addEventListener("DOMContentLoaded", function() {
         this.filterOrganizations();
       }
 
-      // TODO: get data from inputs and show them in summary
+      if (this.currentStep == 5) {
+        this.collectFormData();
+      }
     }
 
     /**
@@ -257,6 +259,70 @@ document.addEventListener("DOMContentLoaded", function() {
         const isVisible = organizationCategories.some(catId => selectedCategories.includes(catId));
         organizationElement.style.display = isVisible ? '' : 'none';
       });
+    }
+
+    /**
+     * Collect data from form and show in summary
+     */
+    collectFormData() {
+      const summary = {
+        categories: Array.from(document.querySelectorAll('input[name="categories"]:checked')).map(cb => cb.parentElement.querySelector('.description').innerText),
+        bags: document.querySelector('input[name="bags"]').value,
+        organization: document.querySelector('input[name="organization"]:checked').closest('label').querySelector('.title').innerText,
+        address: {
+          street: document.querySelector('input[name="address"]').value,
+          city: document.querySelector('input[name="city"]').value,
+          postcode: document.querySelector('input[name="postcode"]').value,
+          phone: document.querySelector('input[name="phone"]').value
+        },
+        date: document.querySelector('input[name="data"]').value,
+        time: document.querySelector('input[name="time"]').value,
+        more_info: document.querySelector('textarea[name="more_info"]').value
+      };
+
+      this.displaySummary(summary);
+    }
+
+    /**
+     * Display summary data in the last step
+     */
+    displaySummary(summary) {
+      const summaryElement = document.querySelector('.summary');
+      const summaryText = `
+        <div class="form-section">
+          <h4>Oddajesz:</h4>
+          <ul>
+            <li>
+              <span class="icon icon-bag"></span>
+              <span class="summary--text">${summary.bags} worki ${summary.categories.join(', ')}</span>
+            </li>
+            <li>
+              <span class="icon icon-hand"></span>
+              <span class="summary--text">Dla fundacji "${summary.organization}"</span>
+            </li>
+          </ul>
+        </div>
+        <div class="form-section form-section--columns">
+          <div class="form-section--column">
+            <h4>Adres odbioru:</h4>
+            <ul>
+              <li>${summary.address.street}</li>
+              <li>${summary.address.city}</li>
+              <li>${summary.address.postcode}</li>
+              <li>${summary.address.phone}</li>
+            </ul>
+          </div>
+          <div class="form-section--column">
+            <h4>Termin odbioru:</h4>
+            <ul>
+              <li>${summary.date}</li>
+              <li>${summary.time}</li>
+              <li>${summary.more_info}</li>
+            </ul>
+          </div>
+        </div>
+      `;
+      summaryElement.innerHTML = summaryText;
     }
 
     /**
