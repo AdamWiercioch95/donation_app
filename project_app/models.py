@@ -8,6 +8,11 @@ class Category(models.Model):
     def __str__(self):
         return self.name
 
+    class Meta:
+        verbose_name = 'Kategoria'
+        verbose_name_plural = 'Kategorie'
+        ordering = ['name']
+
 
 TYPES = (
     (1, 'fundacja'),
@@ -23,7 +28,12 @@ class Institution(models.Model):
     categories = models.ManyToManyField(Category)
 
     def __str__(self):
-        return self.name
+        return f"{self.name} ({dict(TYPES).get(self.type, 'Nieznany rodzaj instytucji')})"
+
+    class Meta:
+        verbose_name = 'Instytucja'
+        verbose_name_plural = 'Instytucje'
+        ordering = ['name']
 
 
 class Donation(models.Model):
@@ -41,3 +51,8 @@ class Donation(models.Model):
 
     def __str__(self):
         return f'Quantity: {self.quantity}, Institution: {self.institution}'
+
+    class Meta:
+        verbose_name = 'Darowizna'
+        verbose_name_plural = 'Darowizny'
+        ordering = ['institution']
