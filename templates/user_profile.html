@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block title %} Profil użytkownika {% endblock %}
+
+{% block content %}
+<div class="container container--profile">
+    <div class="profile-header">
+        <h2>Twój profil</h2>
+    </div>
+    <div class="profile-content">
+        <div class="profile-item">
+            <span class="profile-label">Imię:</span>
+            <span class="profile-value">{{ user.first_name }}</span>
+        </div>
+        <div class="profile-item">
+            <span class="profile-label">Nazwisko:</span>
+            <span class="profile-value">{{ user.last_name }}</span>
+        </div>
+        <div class="profile-item">
+            <span class="profile-label">Email:</span>
+            <span class="profile-value">{{ user.email }}</span>
+        </div>
+    </div>
+</div>
+{% endblock %}
