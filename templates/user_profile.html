@@ -34,6 +34,15 @@
             <div class="donation-detail"><strong>Kategorie:</strong> {{ donation.categories.all|join:", " }}</div>
             <div class="donation-detail"><strong>Data odbioru:</strong> {{ donation.pick_up_date }}</div>
             <div class="donation-detail"><strong>Godzina odbioru:</strong> {{ donation.pick_up_time }}</div>
+            <div class="donation-actions">
+                <form method="post" action="{% url 'user_profile' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="donation_id" value="{{ donation.id }}">
+                    <button type="submit" class="btn {% if donation.is_taken %}btn--secondary{% else %}btn--primary{% endif %}">
+                        {% if donation.is_taken %}Oznacz jako niezabrany{% else %}Oznacz jako zabrany{% endif %}
+                    </button>
+                </form>
+            </div>
         </div>
         {% empty %}
         <p class="no-donations">Nie przekazałeś jeszcze żadnych darów.</p>
