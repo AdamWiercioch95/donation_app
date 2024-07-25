@@ -4,6 +4,7 @@
 
 {% block content %}
 <div class="container container--profile">
+    
     <div class="profile-header">
         <h2>Twój profil</h2>
     </div>
@@ -21,5 +22,23 @@
             <span class="profile-value">{{ user.email }}</span>
         </div>
     </div>
+
+    <div class="donations-header">
+        <h3>Przekazane dary</h3>
+    </div>
+    <div class="donations-list">
+        {% for donation in donations %}
+        <div class="donation-item">
+            <div class="donation-detail"><strong>Liczba worków:</strong> {{ donation.quantity }}</div>
+            <div class="donation-detail"><strong>Organizacja:</strong> {{ donation.institution.name }}</div>
+            <div class="donation-detail"><strong>Kategorie:</strong> {{ donation.categories.all|join:", " }}</div>
+            <div class="donation-detail"><strong>Data odbioru:</strong> {{ donation.pick_up_date }}</div>
+            <div class="donation-detail"><strong>Godzina odbioru:</strong> {{ donation.pick_up_time }}</div>
+        </div>
+        {% empty %}
+        <p>Nie przekazałeś jeszcze żadnych darów.</p>
+        {% endfor %}
+    </div>
+
 </div>
 {% endblock %}
