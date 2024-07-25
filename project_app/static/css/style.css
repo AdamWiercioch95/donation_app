@@ -1911,3 +1911,10 @@ footer .bottom-line--icons a img {
 .donation-detail:last-child {
     margin-bottom: 0;
 }
+
+.no-donations {
+    text-align: center;
+    font-size: 12px;
+    color: #666;
+    margin: 20px 0;
+}
