@@ -6,7 +6,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.db.models import Sum
 from django.http import HttpResponseBadRequest
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect, render, get_object_or_404
 from django.views import View
 from django.views.generic import TemplateView
 
@@ -142,5 +142,13 @@ class UserProfileView(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['donations'] = Donation.objects.filter(user=self.request.user)
+        context['donations'] = Donation.objects.filter(user=self.request.user).order_by('is_taken', '-pick_up_date')
         return context
+
+    def post(self, request, *args, **kwargs):
+        donation_id = request.POST.get('donation_id')
+        if donation_id:
+            donation = get_object_or_404(Donation, id=donation_id, user=request.user)
+            donation.is_taken = not donation.is_taken
+            donation.save()
+        return redirect('user_profile')
