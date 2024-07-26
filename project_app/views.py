@@ -1,12 +1,16 @@
+import json
+
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.db.models import Sum
-from django.shortcuts import redirect
+from django.http import HttpResponseBadRequest
+from django.shortcuts import redirect, render, get_object_or_404
 from django.views import View
 from django.views.generic import TemplateView
 
-from project_app.models import Donation, Institution, TYPES
+from project_app.models import Donation, Institution, TYPES, Category
 
 
 class LandingPageView(TemplateView):
@@ -21,12 +25,65 @@ class LandingPageView(TemplateView):
         return context
 
 
-class AddDonationView(TemplateView):
-    template_name = 'form.html'
+class AddDonationView(LoginRequiredMixin, View):
+    login_url = 'login'
+    redirect_field_name = 'redirect_to'
+
+    def get(self, request):
+        categories = Category.objects.all()
+        organizations = Institution.objects.all()
+        for organization in organizations:
+            category_ids = list(organization.categories.values_list('id', flat=True))
+            organization.category_ids_json = json.dumps(category_ids)
+
+        context = {
+            'categories': categories,
+            'organizations': organizations,
+        }
+
+        return render(request, 'form.html', context)
+
+    def post(self, request):
+        quantity = request.POST.get('bags')
+        categories = request.POST.getlist('categories')
+        institution_id = request.POST.get('organization')
+        address = request.POST.get('address')
+        phone_number = request.POST.get('phone')
+        city = request.POST.get('city')
+        zip_code = request.POST.get('postcode')
+        pick_up_date = request.POST.get('data')
+        pick_up_time = request.POST.get('time')
+        pick_up_comment = request.POST.get('more_info')
+
+        if not all([quantity, institution_id, address, phone_number, city, zip_code, pick_up_date, pick_up_time]):
+            return HttpResponseBadRequest("Missing required fields.")
+
+        try:
+            institution = Institution.objects.get(id=institution_id)
+        except Institution.DoesNotExist:
+            return HttpResponseBadRequest("Invalid organization.")
+
+        donation = Donation(
+            quantity=quantity,
+            address=address,
+            phone_number=phone_number,
+            city=city,
+            zip_code=zip_code,
+            pick_up_date=pick_up_date,
+            pick_up_time=pick_up_time,
+            pick_up_comment=pick_up_comment,
+            user=request.user,
+            institution=institution
+        )
+        donation.save()
+        donation.categories.set(categories)
+
+        return redirect('confirm')
 
 
-class ConfirmDonationView(TemplateView):
-    template_name = 'form-confirmation.html'
+class ConfirmDonationView(LoginRequiredMixin, View):
+    def get(self, request):
+        return render(request, 'form-confirmation.html')
 
 
 class LoginView(TemplateView):
@@ -78,3 +135,20 @@ class LogoutView(View):
     def get(self, request):
         logout(request)
         return redirect('landing_page')
+
+
+class UserProfileView(LoginRequiredMixin, TemplateView):
+    template_name = 'user_profile.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['donations'] = Donation.objects.filter(user=self.request.user).order_by('is_taken', '-pick_up_date')
+        return context
+
+    def post(self, request, *args, **kwargs):
+        donation_id = request.POST.get('donation_id')
+        if donation_id:
+            donation = get_object_or_404(Donation, id=donation_id, user=request.user)
+            donation.is_taken = not donation.is_taken
+            donation.save()
+        return redirect('user_profile')

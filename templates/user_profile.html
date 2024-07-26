@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block title %} Profil użytkownika {% endblock %}
+
+{% block content %}
+<div class="container container--profile">
+    
+    <div class="profile-header">
+        <h2>Twój profil</h2>
+    </div>
+    <div class="profile-content">
+        <div class="profile-item">
+            <span class="profile-label">Imię:</span>
+            <span class="profile-value">{{ user.first_name }}</span>
+        </div>
+        <div class="profile-item">
+            <span class="profile-label">Nazwisko:</span>
+            <span class="profile-value">{{ user.last_name }}</span>
+        </div>
+        <div class="profile-item">
+            <span class="profile-label">Email:</span>
+            <span class="profile-value">{{ user.email }}</span>
+        </div>
+    </div>
+
+    <div class="donations-header">
+        <h3>Przekazane dary</h3>
+    </div>
+    <div class="donations-list">
+        {% for donation in donations %}
+        <div class="donation-item">
+            <div class="donation-detail"><strong>Liczba worków:</strong> {{ donation.quantity }}</div>
+            <div class="donation-detail"><strong>Organizacja:</strong> {{ donation.institution.name }}</div>
+            <div class="donation-detail"><strong>Kategorie:</strong> {{ donation.categories.all|join:", " }}</div>
+            <div class="donation-detail"><strong>Data odbioru:</strong> {{ donation.pick_up_date }}</div>
+            <div class="donation-detail"><strong>Godzina odbioru:</strong> {{ donation.pick_up_time }}</div>
+            <div class="donation-actions">
+                <form method="post" action="{% url 'user_profile' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="donation_id" value="{{ donation.id }}">
+                    <button type="submit" class="btn {% if donation.is_taken %}btn--secondary{% else %}btn--primary{% endif %}">
+                        {% if donation.is_taken %}Oznacz jako niezabrany{% else %}Oznacz jako zabrany{% endif %}
+                    </button>
+                </form>
+            </div>
+        </div>
+        {% empty %}
+        <p class="no-donations">Nie przekazałeś jeszcze żadnych darów.</p>
+        {% endfor %}
+    </div>
+
+</div>
+{% endblock %}
