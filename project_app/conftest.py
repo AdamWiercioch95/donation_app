@@ -13,29 +13,29 @@ def client():
 
 @pytest.fixture
 def user():
-    return User.objects.create_user(username='testuser', password='password', email='testuser@op.pl')
+    return User.objects.create_user(username='test_user', password='password', email='testuser@op.pl')
 
 
 @pytest.fixture
 def category():
-    return Category.objects.create(name='Test Category', type=1)
+    return Category.objects.create(name='Test Category')
 
 
 @pytest.fixture
 def institution(category):
-    return Institution.objects.create(
+    institution = Institution.objects.create(
         name='Test Institution',
         description='Test Institution',
         type=1,
-        categories=category,
     )
+    institution.categories.add(category)
+    return institution
 
 
 @pytest.fixture
 def donation(category, institution, user):
-    return Donation.objects.create(
+    donation = Donation.objects.create(
         quantity=5,
-        categories=category,
         institution=institution,
         address='test_address',
         phone_number='111222333',
@@ -47,3 +47,5 @@ def donation(category, institution, user):
         user=user,
         is_taken=False
     )
+    donation.categories.add(category)
+    return donation
