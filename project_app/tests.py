@@ -236,3 +236,53 @@ def test_confirm_donation_view_get_unauthenticated(client):
     assert response.url.startswith('/accounts/login/')
     assert 'next=' in response.url
     assert response.url == f"/accounts/login/?next={url}"
+
+
+@pytest.mark.django_db
+def test_user_profile_view_get_authenticated(client, user, donation):
+    client.force_login(user)
+    url = reverse('user_profile')
+    response = client.get(url)
+
+    assert response.status_code == 200
+    assert 'user_profile.html' in [t.name for t in response.templates]
+    assert 'donations' in response.context
+    assert list(response.context['donations']) == list(
+        Donation.objects.filter(user=user).order_by('is_taken', '-pick_up_date'))
+
+
+@pytest.mark.django_db
+def test_user_profile_view_get_unauthenticated(client):
+    url = reverse('user_profile')
+    response = client.get(url)
+
+    assert response.status_code == 302
+    login_url_1 = reverse('login')
+    login_url_2 = '/accounts/login/'
+
+    assert response.url.startswith(login_url_1) or response.url.startswith(login_url_2)
+    assert 'next=' in response.url
+
+
+@pytest.mark.django_db
+def test_user_profile_view_post_toggle_donation_status(client, user, donation):
+    client.force_login(user)
+    url = reverse('user_profile')
+    initial_status = donation.is_taken
+
+    response = client.post(url, {'donation_id': donation.id})
+
+    donation.refresh_from_db()
+    assert response.status_code == 302
+    assert response.url == url
+    assert donation.is_taken == (not initial_status)
+
+
+@pytest.mark.django_db
+def test_user_profile_view_post_invalid_donation_id(client, user):
+    client.force_login(user)
+    url = reverse('user_profile')
+
+    response = client.post(url, {'donation_id': 999})
+
+    assert response.status_code == 404
